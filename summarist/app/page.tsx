@@ -1,12 +1,14 @@
 "use client";
 
 import "./home.css";
+import { useAuthModal } from "./context/AuthModalContext";
 import { AiFillFileText, AiFillBulb, AiFillAudio } from "react-icons/ai";
 import { BsStarFill, BsStarHalf } from "react-icons/bs";
 import { BiCrown } from "react-icons/bi";
 import { RiLeafLine } from "react-icons/ri";
 
 export default function HomePage() {
+  const { openModal } = useAuthModal();
   return (
     <>
       <nav className="nav">
@@ -15,7 +17,13 @@ export default function HomePage() {
             <img className="nav__img" src="/home/logo.png" alt="logo" />
           </figure>
           <ul className="nav__list--wrapper">
-            <li className="nav__list nav__list--login">Login</li>
+           <li
+  className="nav__list nav__list--login"
+  onClick={() => openModal("login")}
+>
+  Login
+</li>
+
             <li className="nav__list nav__list--mobile">About</li>
             <li className="nav__list nav__list--mobile">Contact</li>
             <li className="nav__list nav__list--mobile">Help</li>
@@ -39,7 +47,9 @@ export default function HomePage() {
                   <br className="remove--tablet" />
                   and even people who don’t like to read.
                 </div>
-                <button className="btn home__cta--btn">Login</button>
+                <button className="btn home__cta--btn" onClick={() => openModal("login")}>
+                  Login
+                </button>
               </div>
 
               <figure className="landing__image--mask">

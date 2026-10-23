@@ -4,7 +4,14 @@ import { useState } from "react";
 import { useAuthModal } from "../context/AuthModalContext";
 
 export default function AuthModal() {
-  const { isOpen, mode, closeModal } = useAuthModal();
+  const { 
+    isOpen, 
+    mode, 
+    closeModal, 
+    login, 
+    register, 
+    guestLogin 
+  } = useAuthModal();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,12 +25,35 @@ export default function AuthModal() {
     setError("");
     setLoading(true);
 
-    // Firebase logic will be added in Step 3.8
-    setTimeout(() => {
-      setLoading(false);
-      alert(`${mode === "login" ? "Logged in" : "Account created"} (placeholder)`);
+    try {
+      if (mode === "login") {
+        await login(email, password);
+      } else {
+        await register(email, password);
+      }
+
       closeModal();
-    }, 1000);
+      window.location.href = "/for-you";
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      await guestLogin();
+      closeModal();
+      window.location.href = "/for-you";
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,7 +89,13 @@ export default function AuthModal() {
           </button>
         </form>
 
-        <button className="auth-modal__guest">Continue as Guest</button>
+        <button 
+          className="auth-modal__guest" 
+          onClick={handleGuestLogin}
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "Continue as Guest"}
+        </button>
 
         {mode === "login" ? (
           <p className="auth-modal__switch">
@@ -76,4 +112,5 @@ export default function AuthModal() {
     </div>
   );
 }
+
 
