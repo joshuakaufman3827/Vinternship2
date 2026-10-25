@@ -17,9 +17,18 @@ export default function Home() {
     <div className="min-h-screen bg-white text-slate-900 flex flex-col justify-between">
       {/* HEADER / NAVBAR */}
       <header className="max-w-7xl mx-auto w-full px-6 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl font-bold tracking-tight text-[#032b41]">Summarist</span>
-        </div>
+        <div className="flex items-center gap-3">
+  <Image
+    src="/home/logo.png"
+    alt="Summarist Logo"
+    width={40}
+    height={40}
+    className="object-contain"
+  />
+  <span className="text-2xl font-bold tracking-tight text-[#032b41]">
+    Summarist
+  </span>
+</div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
           <a href="#" className="hover:text-slate-900 transition">About</a>
           <a href="#" className="hover:text-slate-900 transition">Contact</a>
@@ -55,14 +64,14 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-center">
-          <Image 
-            src="/home/landing.png" 
-            alt="Summarist Landing Illustration" 
-            width={500} 
-            height={400} 
-            priority 
-            className="w-full max-w-md object-contain"
-          />
+          <Image
+  src="/home/landing.png"
+  alt="Summarist Landing Illustration"
+  width={700}
+  height={550}
+  priority
+  className="w-full max-w-xl object-contain"
+/>
         </div>
       </section>
 
@@ -87,7 +96,7 @@ export default function Home() {
                 Explore book lists and personalized recommendations.
               </p>
             </div>
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                        <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 space-y-4">
               <div className="text-3xl">🎧</div>
               <h3 className="text-xl font-bold text-[#032b41]">Briefcasts</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
@@ -95,49 +104,121 @@ export default function Home() {
               </p>
             </div>
           </div>
-
-          {/* Goal tags banner */}
-          <div className="mt-16 text-center space-y-4">
-            <div className="flex flex-wrap justify-center gap-3 text-sm font-semibold text-slate-700">
-              <span className="bg-white px-4 py-2 rounded-full border border-slate-200">Enhance your knowledge</span>
-              <span className="bg-white px-4 py-2 rounded-full border border-slate-200 text-emerald-600">Achieve greater success</span>
-              <span className="bg-white px-4 py-2 rounded-full border border-slate-200">Improve your health</span>
-              <span className="bg-white px-4 py-2 rounded-full border border-slate-200">Develop better parenting skills</span>
-              <span className="bg-white px-4 py-2 rounded-full border border-slate-200">Increase happiness</span>
-              <span className="bg-white px-4 py-2 rounded-full border border-slate-200">Be the best version of yourself!</span>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* STATISTICS CARDS SECTION */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 space-y-6">
-            <div className="space-y-4">
-              <p className="text-lg text-slate-700">
-                <strong className="text-blue-600 text-2xl">93%</strong> of Summarist members significantly increase reading frequency.
-              </p>
-              <p className="text-lg text-slate-700">
-                <strong className="text-blue-600 text-2xl">96%</strong> of Summarist members establish better habits.
-              </p>
-              <p className="text-lg text-slate-700">
-                <strong className="text-blue-600 text-2xl">90%</strong> have made significant positive change to their lives.
-              </p>
-            </div>
-          </div>
-          <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 space-y-6">
-            <div className="space-y-4">
-              <p className="text-lg text-slate-700">
-                <strong className="text-blue-600 text-2xl">91%</strong> of Summarist members report feeling more productive after incorporating the service into their daily routine.
-              </p>
-              <p className="text-lg text-slate-700">
-                <strong className="text-blue-600 text-2xl">94%</strong> of Summarist members have noticed an improvement in their overall comprehension and retention of information.
-              </p>
-            </div>
-          </div>
+{/* BENEFITS + STATISTICS SECTION */}
+<section className="max-w-7xl mx-auto px-6 py-20">
+  <div className="space-y-24">
+
+    {/* Row 1 */}
+    <div className="grid md:grid-cols-2 gap-12 items-center">
+      <div className="space-y-4">
+        <h3 className="text-5xl font-medium text-gray-500">
+          Enhance your knowledge
+        </h3>
+
+        <h3 className="text-5xl font-medium text-[#2bd97c]">
+          Achieve greater success
+        </h3>
+
+        <h3 className="text-5xl font-medium text-gray-500">
+          Improve your health
+        </h3>
+
+        <h3 className="text-5xl font-medium text-gray-500">
+          Develop better parenting skills
+        </h3>
+
+        <h3 className="text-5xl font-medium text-gray-500">
+          Increase happiness
+        </h3>
+
+        <h3 className="text-5xl font-medium text-gray-500">
+          Be the best version of yourself!
+        </h3>
+      </div>
+
+      <div className="bg-[#f1f5f4] p-10">
+        <div className="space-y-8 text-xl text-slate-700">
+
+          <p>
+            <span className="text-blue-600 font-bold mr-3">93%</span>
+            of Summarist members significantly increase reading frequency.
+          </p>
+
+          <p>
+            <span className="text-blue-600 font-bold mr-3">96%</span>
+            of Summarist members establish better habits.
+          </p>
+
+          <p>
+            <span className="text-blue-600 font-bold mr-3">90%</span>
+            have made significant positive change to their lives.
+          </p>
+
         </div>
-      </section>
+      </div>
+    </div>
+
+    {/* Row 2 */}
+    <div className="grid md:grid-cols-2 gap-12 items-center">
+
+      <div className="bg-[#f1f5f4] p-10">
+        <div className="space-y-8 text-xl text-slate-700">
+
+          <p>
+            <span className="text-blue-600 font-bold mr-3">91%</span>
+            of Summarist members report feeling more productive after
+            incorporating the service into their daily routine.
+          </p>
+
+          <p>
+            <span className="text-blue-600 font-bold mr-3">94%</span>
+            of Summarist members have noticed an improvement in their
+            overall comprehension and retention of information.
+          </p>
+
+          <p>
+            <span className="text-blue-600 font-bold mr-3">88%</span>
+            of Summarist members feel more informed about current events
+            and industry trends since using the platform.
+          </p>
+
+        </div>
+      </div>
+
+      <div className="space-y-4 text-right">
+
+        <h3 className="text-5xl font-medium text-gray-500">
+          Expand your learning
+        </h3>
+
+        <h3 className="text-5xl font-medium text-[#2bd97c]">
+          Accomplish your goals
+        </h3>
+
+        <h3 className="text-5xl font-medium text-gray-500">
+          Strengthen your vitality
+        </h3>
+
+        <h3 className="text-5xl font-medium text-gray-500">
+          Become a better caregiver
+        </h3>
+
+        <h3 className="text-5xl font-medium text-gray-500">
+          Improve your mood
+        </h3>
+
+        <h3 className="text-5xl font-medium text-gray-500">
+          Maximize your abilities
+        </h3>
+
+      </div>
+    </div>
+
+  </div>
+</section>
 
       {/* TESTIMONIALS SECTION */}
       <section className="bg-slate-50 py-20 border-t border-slate-100">
@@ -145,26 +226,26 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center text-[#032b41] mb-16">
             What our members say
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4 flex flex-col justify-between">
+          <div className="max-w-3xl mx-auto flex flex-col gap-8">
+            <div className="bg-white p-8 rounded-xl shadow-sm">
               <p className="text-sm text-slate-600 leading-relaxed italic">
                 "This app has been a <span className="font-semibold text-slate-900">game-changer</span> for me! It's saved me so much time and effort in reading and comprehending books. Highly recommend it to all book lovers."
               </p>
               <p className="font-bold text-sm text-[#032b41]">— Hanna M.</p>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4 flex flex-col justify-between">
+            <div className="bg-white p-8 rounded-xl shadow-sm">
               <p className="text-sm text-slate-600 leading-relaxed italic">
                 "I love this app! It provides <span className="font-semibold text-slate-900">concise and accurate summaries</span> of books in a way that is easy to understand. It's also very user-friendly and intuitive."
               </p>
               <p className="font-bold text-sm text-[#032b41]">— David B.</p>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4 flex flex-col justify-between">
+            <div className="bg-white p-8 rounded-xl shadow-sm">
               <p className="text-sm text-slate-600 leading-relaxed italic">
                 "This app is a great way to get the main takeaways from a book without having to read the entire thing. The summaries are well-written and informative."
               </p>
               <p className="font-bold text-sm text-[#032b41]">— Nathan S.</p>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4 flex flex-col justify-between">
+            <div className="bg-white p-8 rounded-xl shadow-sm">
               <p className="text-sm text-slate-600 leading-relaxed italic">
                 "If you're a busy person who loves reading but doesn't have the time to read every book in full, this app is for you!"
               </p>

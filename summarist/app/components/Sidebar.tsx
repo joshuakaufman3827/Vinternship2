@@ -69,12 +69,12 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      <button
-        onClick={handleLogout}
-        className="bg-[#2bd97c] hover:bg-[#20b868] text-[#032b41] font-semibold py-3 rounded-lg"
-      >
-        Logout
-      </button>
+     <button
+  onClick={handleLogout}
+  className="flex items-center gap-2"
+>
+  Logout
+</button>
     </aside>
   );
 }
