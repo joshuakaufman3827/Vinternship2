@@ -1,382 +1,249 @@
-"use client";
+'use client';
 
-import "./home.css";
-import { useAuthModal } from "./context/AuthModalContext";
-import { AiFillFileText, AiFillBulb, AiFillAudio } from "react-icons/ai";
-import { BsStarFill, BsStarHalf } from "react-icons/bs";
-import { BiCrown } from "react-icons/bi";
-import { RiLeafLine } from "react-icons/ri";
+import React, { useState } from 'react';
+import Image from 'next/image';
+import AuthModal from './components/AuthModal';
 
-export default function HomePage() {
-  const { openModal } = useAuthModal();
+export default function Home() {
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+
+  const openLogin = () => {
+    setAuthMode('login');
+    setIsAuthOpen(true);
+  };
+
   return (
-    <>
-      <nav className="nav">
-        <div className="nav__wrapper">
-          <figure className="nav__img--mask">
-            <img className="nav__img" src="/home/logo.png" alt="logo" />
-          </figure>
-          <ul className="nav__list--wrapper">
-           <li
-  className="nav__list nav__list--login"
-  onClick={() => openModal("login")}
->
-  Login
-</li>
-
-            <li className="nav__list nav__list--mobile">About</li>
-            <li className="nav__list nav__list--mobile">Contact</li>
-            <li className="nav__list nav__list--mobile">Help</li>
-          </ul>
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col justify-between">
+      {/* HEADER / NAVBAR */}
+      <header className="max-w-7xl mx-auto w-full px-6 py-6 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl font-bold tracking-tight text-[#032b41]">Summarist</span>
         </div>
-      </nav>
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+          <a href="#" className="hover:text-slate-900 transition">About</a>
+          <a href="#" className="hover:text-slate-900 transition">Contact</a>
+          <a href="#" className="hover:text-slate-900 transition">Help</a>
+        </nav>
+        <div>
+          <button 
+            onClick={openLogin}
+            className="bg-[#2bd97c] hover:bg-[#20b868] text-slate-900 font-semibold px-6 py-2.5 rounded-lg transition text-sm shadow-sm"
+          >
+            Login
+          </button>
+        </div>
+      </header>
 
-      <section id="landing">
-        <div className="container">
-          <div className="row">
-            <div className="landing__wrapper">
-              <div className="landing__content">
-                <div className="landing__content__title">
-                  Gain more knowledge <br className="remove--tablet" />
-                  in less time
-                </div>
-                <div className="landing__content__subtitle">
-                  Great summaries for busy people,
-                  <br className="remove--tablet" />
-                  individuals who barely have time to read,
-                  <br className="remove--tablet" />
-                  and even people who don’t like to read.
-                </div>
-                <button className="btn home__cta--btn" onClick={() => openModal("login")}>
-                  Login
-                </button>
-              </div>
+      {/* HERO SECTION */}
+      <section className="max-w-7xl mx-auto px-6 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="space-y-6">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-[#032b41] leading-tight">
+            Gain more knowledge <br />
+            <span className="text-[#2bd97c]">in less time</span>
+          </h1>
+          <p className="text-lg text-slate-600 max-w-lg leading-relaxed">
+            Great summaries for busy people, individuals who barely have time to read, and even people who don’t like to read.
+          </p>
+          <div>
+            <button 
+              onClick={openLogin}
+              className="bg-[#2bd97c] hover:bg-[#20b868] text-slate-900 font-semibold px-8 py-3.5 rounded-xl transition text-base shadow-md"
+            >
+              Login
+            </button>
+          </div>
+        </div>
+        <div className="flex justify-center">
+          <Image 
+            src="/home/landing.png" 
+            alt="Summarist Landing Illustration" 
+            width={500} 
+            height={400} 
+            priority 
+            className="w-full max-w-md object-contain"
+          />
+        </div>
+      </section>
 
-              <figure className="landing__image--mask">
-                <img src="/home/landing.png" alt="landing" />
-              </figure>
+      {/* FEATURES / BENEFITS SECTION */}
+      <section className="bg-slate-50 py-20 border-y border-slate-100">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center text-[#032b41] mb-16">
+            Understand books in few minutes
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+              <div className="text-3xl">📖</div>
+              <h3 className="text-xl font-bold text-[#032b41]">Read or listen</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">
+                Save time by getting the core ideas from the best books.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+              <div className="text-3xl">🔍</div>
+              <h3 className="text-xl font-bold text-[#032b41]">Find your next read</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">
+                Explore book lists and personalized recommendations.
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+              <div className="text-3xl">🎧</div>
+              <h3 className="text-xl font-bold text-[#032b41]">Briefcasts</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">
+                Gain valuable insights from briefcasts.
+              </p>
+            </div>
+          </div>
+
+          {/* Goal tags banner */}
+          <div className="mt-16 text-center space-y-4">
+            <div className="flex flex-wrap justify-center gap-3 text-sm font-semibold text-slate-700">
+              <span className="bg-white px-4 py-2 rounded-full border border-slate-200">Enhance your knowledge</span>
+              <span className="bg-white px-4 py-2 rounded-full border border-slate-200 text-emerald-600">Achieve greater success</span>
+              <span className="bg-white px-4 py-2 rounded-full border border-slate-200">Improve your health</span>
+              <span className="bg-white px-4 py-2 rounded-full border border-slate-200">Develop better parenting skills</span>
+              <span className="bg-white px-4 py-2 rounded-full border border-slate-200">Increase happiness</span>
+              <span className="bg-white px-4 py-2 rounded-full border border-slate-200">Be the best version of yourself!</span>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="features">
-        <div className="container">
-          <div className="row">
-            <div className="section__title">Understand books in few minutes</div>
-
-            <div className="features__wrapper">
-              <div className="features">
-                <div className="features__icon">
-                  <AiFillFileText />
-                </div>
-                <div className="features__title">Read or listen</div>
-                <div className="features__sub--title">
-                  Save time by getting the core ideas from the best books.
-                </div>
-              </div>
-
-              <div className="features">
-                <div className="features__icon">
-                  <AiFillBulb />
-                </div>
-                <div className="features__title">Find your next read</div>
-                <div className="features__sub--title">
-                  Explore book lists and personalized recommendations.
-                </div>
-              </div>
-
-              <div className="features">
-                <div className="features__icon">
-                  <AiFillAudio />
-                </div>
-                <div className="features__title">Briefcasts</div>
-                <div className="features__sub--title">
-                  Gain valuable insights from briefcasts
-                </div>
-              </div>
+      {/* STATISTICS CARDS SECTION */}
+      <section className="max-w-7xl mx-auto px-6 py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 space-y-6">
+            <div className="space-y-4">
+              <p className="text-lg text-slate-700">
+                <strong className="text-blue-600 text-2xl">93%</strong> of Summarist members significantly increase reading frequency.
+              </p>
+              <p className="text-lg text-slate-700">
+                <strong className="text-blue-600 text-2xl">96%</strong> of Summarist members establish better habits.
+              </p>
+              <p className="text-lg text-slate-700">
+                <strong className="text-blue-600 text-2xl">90%</strong> have made significant positive change to their lives.
+              </p>
             </div>
-
-            <div className="statistics__wrapper">
-              <div className="statistics__content--header">
-                <div className="statistics__heading">Enhance your knowledge</div>
-                <div className="statistics__heading">Achieve greater success</div>
-                <div className="statistics__heading">Improve your health</div>
-                <div className="statistics__heading">
-                  Develop better parenting skills
-                </div>
-                <div className="statistics__heading">Increase happiness</div>
-                <div className="statistics__heading">
-                  Be the best version of yourself!
-                </div>
-              </div>
-
-              <div className="statistics__content--details">
-                <div className="statistics__data">
-                  <div className="statistics__data--number">93%</div>
-                  <div className="statistics__data--title">
-                    of Summarist members <b>significantly increase</b> reading
-                    frequency.
-                  </div>
-                </div>
-
-                <div className="statistics__data">
-                  <div className="statistics__data--number">96%</div>
-                  <div className="statistics__data--title">
-                    of Summarist members <b>establish better</b> habits.
-                  </div>
-                </div>
-
-                <div className="statistics__data">
-                  <div className="statistics__data--number">90%</div>
-                  <div className="statistics__data--title">
-                    have made <b>significant positive</b> change to their lives.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="statistics__wrapper">
-              <div className="statistics__content--details statistics__content--details-second">
-                <div className="statistics__data">
-                  <div className="statistics__data--number">91%</div>
-                  <div className="statistics__data--title">
-                    of Summarist members{" "}
-                    <b>report feeling more productive</b> after incorporating the
-                    service into their daily routine.
-                  </div>
-                </div>
-
-                <div className="statistics__data">
-                  <div className="statistics__data--number">94%</div>
-                  <div className="statistics__data--title">
-                    of Summarist members have{" "}
-                    <b>noticed an improvement</b> in their overall comprehension
-                    and retention of information.
-                  </div>
-                </div>
-
-                <div className="statistics__data">
-                  <div className="statistics__data--number">88%</div>
-                  <div className="statistics__data--title">
-                    of Summarist members <b>feel more informed</b> about current
-                    events and industry trends since using the platform.
-                  </div>
-                </div>
-              </div>
-
-              <div className="statistics__content--header statistics__content--header-second">
-                <div className="statistics__heading">Expand your learning</div>
-                <div className="statistics__heading">Accomplish your goals</div>
-                <div className="statistics__heading">Strengthen your vitality</div>
-                <div className="statistics__heading">Become a better caregiver</div>
-                <div className="statistics__heading">Improve your mood</div>
-                <div className="statistics__heading">Maximize your abilities</div>
-              </div>
+          </div>
+          <div className="bg-slate-50 p-8 rounded-2xl border border-slate-100 space-y-6">
+            <div className="space-y-4">
+              <p className="text-lg text-slate-700">
+                <strong className="text-blue-600 text-2xl">91%</strong> of Summarist members report feeling more productive after incorporating the service into their daily routine.
+              </p>
+              <p className="text-lg text-slate-700">
+                <strong className="text-blue-600 text-2xl">94%</strong> of Summarist members have noticed an improvement in their overall comprehension and retention of information.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="reviews">
-        <div className="row">
-          <div className="container">
-            <div className="section__title">What our members say</div>
-
-            <div className="reviews__wrapper">
-              <div className="review">
-                <div className="review__header">
-                  <div className="review__name">Hanna M.</div>
-                  <div className="review__stars">
-                    <BsStarFill />
-                  </div>
-                </div>
-                <div className="review__body">
-                  This app has been a <b>game-changer</b> for me! It's saved me so
-                  much time and effort in reading and comprehending books. Highly
-                  recommend it to all book lovers.
-                </div>
-              </div>
-
-              <div className="review">
-                <div className="review__header">
-                  <div className="review__name">David B.</div>
-                  <div className="review__stars">
-                    <BsStarFill />
-                  </div>
-                </div>
-                <div className="review__body">
-                  I love this app! It provides{" "}
-                  <b>concise and accurate summaries</b> of books in a way that is
-                  easy to understand. It's also very user-friendly and intuitive.
-                </div>
-              </div>
-
-              <div className="review">
-                <div className="review__header">
-                  <div className="review__name">Nathan S.</div>
-                  <div className="review__stars">
-                    <BsStarFill />
-                  </div>
-                </div>
-                <div className="review__body">
-                  This app is a great way to get the main takeaways from a book
-                  without having to read the entire thing.{" "}
-                  <b>The summaries are well-written and informative.</b> Definitely
-                  worth downloading.
-                </div>
-              </div>
-
-              <div className="review">
-                <div className="review__header">
-                  <div className="review__name">Ryan R.</div>
-                  <div className="review__stars">
-                    <BsStarFill />
-                  </div>
-                </div>
-                <div className="review__body">
-                  If you're a busy person who{" "}
-                  <b>loves reading but doesn't have the time</b> to read every
-                  book in full, this app is for you! The summaries are thorough
-                  and provide a great overview of the book's content.
-                </div>
-              </div>
+      {/* TESTIMONIALS SECTION */}
+      <section className="bg-slate-50 py-20 border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center text-[#032b41] mb-16">
+            What our members say
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4 flex flex-col justify-between">
+              <p className="text-sm text-slate-600 leading-relaxed italic">
+                "This app has been a <span className="font-semibold text-slate-900">game-changer</span> for me! It's saved me so much time and effort in reading and comprehending books. Highly recommend it to all book lovers."
+              </p>
+              <p className="font-bold text-sm text-[#032b41]">— Hanna M.</p>
             </div>
-
-            <div className="reviews__btn--wrapper">
-              <button className="btn home__cta--btn">Login</button>
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4 flex flex-col justify-between">
+              <p className="text-sm text-slate-600 leading-relaxed italic">
+                "I love this app! It provides <span className="font-semibold text-slate-900">concise and accurate summaries</span> of books in a way that is easy to understand. It's also very user-friendly and intuitive."
+              </p>
+              <p className="font-bold text-sm text-[#032b41]">— David B.</p>
+            </div>
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4 flex flex-col justify-between">
+              <p className="text-sm text-slate-600 leading-relaxed italic">
+                "This app is a great way to get the main takeaways from a book without having to read the entire thing. The summaries are well-written and informative."
+              </p>
+              <p className="font-bold text-sm text-[#032b41]">— Nathan S.</p>
+            </div>
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4 flex flex-col justify-between">
+              <p className="text-sm text-slate-600 leading-relaxed italic">
+                "If you're a busy person who loves reading but doesn't have the time to read every book in full, this app is for you!"
+              </p>
+              <p className="font-bold text-sm text-[#032b41]">— Ryan R.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="numbers">
-        <div className="container">
-          <div className="row">
-            <div className="section__title">Start growing with Summarist now</div>
-
-            <div className="numbers__wrapper">
-              <div className="numbers">
-                <div className="numbers__icon">
-                  <BiCrown />
-                </div>
-                <div className="numbers__title">3 Million</div>
-                <div className="numbers__sub--title">
-                  Downloads on all platforms
-                </div>
-              </div>
-
-              <div className="numbers">
-                <div className="numbers__icon numbers__star--icon">
-                  <BsStarFill />
-                  <BsStarHalf />
-                </div>
-                <div className="numbers__title">4.5 Stars</div>
-                <div className="numbers__sub--title">
-                  Average ratings on iOS and Google Play
-                </div>
-              </div>
-
-              <div className="numbers">
-                <div className="numbers__icon">
-                  <RiLeafLine />
-                </div>
-                <div className="numbers__title">97%</div>
-                <div className="numbers__sub--title">
-                  Of Summarist members create a better reading habit
-                </div>
-              </div>
-            </div>
+      {/* STATS BANNER */}
+      <section className="bg-[#032b41] text-white py-16">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div className="space-y-2">
+            <h3 className="text-3xl md:text-4xl font-bold text-[#2bd97c]">3 Million</h3>
+            <p className="text-sm text-slate-300">Downloads on all platforms</p>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-3xl md:text-4xl font-bold text-[#2bd97c]">4.5 Stars</h3>
+            <p className="text-sm text-slate-300">Average ratings on iOS and Google Play</p>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-3xl md:text-4xl font-bold text-[#2bd97c]">97%</h3>
+            <p className="text-sm text-slate-300">Of Summarist members create a better reading habit</p>
           </div>
         </div>
       </section>
 
-      <section id="footer">
-        <div className="container">
-          <div className="row">
-            <div className="footer__top--wrapper">
-              <div className="footer__block">
-                <div className="footer__link--title">Actions</div>
-                <div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Summarist Magazine</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Cancel Subscription</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Help</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Contact us</a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="footer__block">
-                <div className="footer__link--title">Useful Links</div>
-                <div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Pricing</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Summarist Business</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Gift Cards</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Authors & Publishers</a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="footer__block">
-                <div className="footer__link--title">Company</div>
-                <div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">About</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Careers</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Partners</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Code of Conduct</a>
-                  </div>
-                </div>
-              </div>
-
-              <div className="footer__block">
-                <div className="footer__link--title">Other</div>
-                <div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Sitemap</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Legal Notice</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Terms of Service</a>
-                  </div>
-                  <div className="footer__link--wrapper">
-                    <a className="footer__link">Privacy Policies</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="footer__copyright--wrapper">
-              <div className="footer__copyright">
-                Copyright © 2023 Summarist.
-              </div>
-            </div>
+      {/* FOOTER */}
+      <footer className="bg-white border-t border-slate-200 py-12">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+          <div className="space-y-3">
+            <h4 className="font-bold text-[#032b41]">Actions</h4>
+            <ul className="space-y-2 text-slate-600">
+              <li><a href="#" className="hover:underline">Summarist Magazine</a></li>
+              <li><a href="#" className="hover:underline">Cancel Subscription</a></li>
+              <li><a href="#" className="hover:underline">Help</a></li>
+              <li><a href="#" className="hover:underline">Contact us</a></li>
+            </ul>
+          </div>
+          <div className="space-y-3">
+            <h4 className="font-bold text-[#032b41]">Useful Links</h4>
+            <ul className="space-y-2 text-slate-600">
+              <li><a href="#" className="hover:underline">Pricing</a></li>
+              <li><a href="#" className="hover:underline">Summarist Business</a></li>
+              <li><a href="#" className="hover:underline">Gift Cards</a></li>
+              <li><a href="#" className="hover:underline">Authors & Publishers</a></li>
+            </ul>
+          </div>
+          <div className="space-y-3">
+            <h4 className="font-bold text-[#032b41]">Company</h4>
+            <ul className="space-y-2 text-slate-600">
+              <li><a href="#" className="hover:underline">About</a></li>
+              <li><a href="#" className="hover:underline">Careers</a></li>
+              <li><a href="#" className="hover:underline">Partners</a></li>
+              <li><a href="#" className="hover:underline">Code of Conduct</a></li>
+            </ul>
+          </div>
+          <div className="space-y-3">
+            <h4 className="font-bold text-[#032b41]">Other</h4>
+            <ul className="space-y-2 text-slate-600">
+              <li><a href="#" className="hover:underline">Sitemap</a></li>
+              <li><a href="#" className="hover:underline">Legal Notice</a></li>
+              <li><a href="#" className="hover:underline">Terms of Service</a></li>
+              <li><a href="#" className="hover:underline">Privacy Policies</a></li>
+            </ul>
           </div>
         </div>
-      </section>
-    </>
+        <div className="max-w-7xl mx-auto px-6 mt-12 pt-6 border-t border-slate-100 text-center text-xs text-slate-500">
+          Copyright © 2026 Summarist.
+        </div>
+      </footer>
+
+      {/* AUTH MODAL */}
+      <AuthModal 
+        isOpen={isAuthOpen} 
+        onClose={() => setIsAuthOpen(false)} 
+        initialMode={authMode} 
+      />
+    </div>
   );
 }
 
