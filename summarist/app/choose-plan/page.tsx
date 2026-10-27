@@ -1,236 +1,294 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 export default function ChoosePlanPage() {
-  const [selectedPlan, setSelectedPlan] = useState<"yearly" | "monthly">("yearly");
-  const [openFaq, setOpenFaq] = useState<number | null>(0); // First open by default
+  const [selectedPlan, setSelectedPlan] = useState("yearly");
+  const [openFaq, setOpenFaq] = useState(0);
 
-  const toggleFaq = (index: number) => {
-    setOpenFaq(openFaq === index ? null : index);
-  };
-
-  const handleStartTrial = () => {
-    alert(`You selected the ${selectedPlan} plan! Redirecting to payment...`);
-  };
+  const faqs = [
+    {
+      question: "How does the free 7-day trial work?",
+      answer:
+        "Begin your complimentary 7-day trial with a Summarist annual membership. You are under no obligation to continue your subscription, and you will only be billed when the trial period expires. With Premium access, you can learn at your own pace and as frequently as you desire, and you may terminate your subscription prior to the conclusion of the 7-day free trial.",
+    },
+    {
+      question:
+        "Can I switch subscriptions from monthly to yearly, or yearly to monthly?",
+      answer:
+        "Yes. You can switch your subscription plan at any time from your account settings.",
+    },
+    {
+      question: "What's included in the Premium plan?",
+      answer:
+        "Premium includes unlimited access to all book summaries, audio versions, and new content added to the platform.",
+    },
+    {
+      question: "Can I cancel during my trial or subscription?",
+      answer:
+        "Yes. You can cancel your subscription at any time before the next billing period.",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-white text-[#032b41] flex flex-col justify-between">
-      {/* Top Dark Hero Section */}
-      <section className="bg-[#032b41] text-white pt-16 pb-24 px-6 rounded-b-[40px] text-center space-y-6">
-        <div className="max-w-3xl mx-auto space-y-4">
-          <h1 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight">
+    <div className="min-h-screen bg-[#f7f8fa] overflow-x-hidden">
+      {/* HERO */}
+
+      <section className="bg-[#032b41] text-white rounded-b-[220px]">
+        <div className="max-w-6xl mx-auto px-6 pt-12 pb-56 text-center">
+          <h1 className="text-5xl md:text-7xl font-bold leading-tight max-w-5xl mx-auto">
             Get unlimited access to many amazing books to read
           </h1>
-          <p className="text-slate-300 text-base md:text-lg">
+
+          <p className="text-xl mt-10">
             Turn ordinary moments into amazing learning opportunities
           </p>
+
+          <div className="mt-10 -mb-56 z-20 relative flex justify-center">
+  <div className="overflow-hidden rounded-t-full bg-[#f7f8fa]">
+    <Image
+      src="/home/pricing-top.png"
+      alt="pricing"
+      width={430}
+      height={360}
+      className="block"
+    />
+  </div>
+</div>
         </div>
-        <div className="flex justify-center pt-4">
-          <div className="w-64 h-48 bg-slate-800/50 rounded-2xl flex items-center justify-center border border-slate-700 shadow-inner text-slate-400 text-sm">
-            [Illustration Graphic]
+      </section>
+
+      {/* FEATURES */}
+
+      <section className="max-w-5xl mx-auto px-6 pt-24 pb-16">
+        <div className="grid md:grid-cols-3 gap-12 text-center">
+          <div>
+            <div className="text-6xl mb-4">📄</div>
+
+            <h3 className="font-bold text-[#032b41] text-xl">
+              Key ideas in few min
+            </h3>
+
+            <p className="text-[#032b41] text-lg">
+              with many books to read
+            </p>
+          </div>
+
+          <div>
+            <div className="text-6xl mb-4">🌱</div>
+
+            <h3 className="font-bold text-[#032b41] text-xl">
+              3 million
+            </h3>
+
+            <p className="text-[#032b41] text-lg">
+              people growing with
+              <br />
+              Summarist everyday
+            </p>
+          </div>
+
+          <div>
+            <div className="text-6xl mb-4">🤝</div>
+
+            <h3 className="font-bold text-[#032b41] text-xl">
+              Precise recommendations
+            </h3>
+
+            <p className="text-[#032b41] text-lg">
+              collections curated by experts
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Feature Icons Section */}
-      <section className="max-w-5xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-        <div className="space-y-3 flex flex-col items-center">
-          <div className="text-3xl">📄</div>
-          <h3 className="font-bold text-sm">Key ideas in few min</h3>
-          <p className="text-xs text-slate-500">with many books to read</p>
-        </div>
-        <div className="space-y-3 flex flex-col items-center">
-          <div className="text-3xl">🌱</div>
-          <h3 className="font-bold text-sm">3 million people growing</h3>
-          <p className="text-xs text-slate-500">with Summarist everyday</p>
-        </div>
-        <div className="space-y-3 flex flex-col items-center">
-          <div className="text-3xl">🤝</div>
-          <h3 className="font-bold text-sm">Precise recommendations</h3>
-          <p className="text-xs text-slate-500">collections curated by experts</p>
-        </div>
-      </section>
+      {/* PLAN SECTION */}
 
-      {/* Choose Plan Section */}
-      <section className="max-w-xl mx-auto px-6 py-8 space-y-6 w-full">
-        <h2 className="text-2xl font-bold text-center mb-8">
+      <section className="max-w-4xl mx-auto px-6">
+        <h2 className="text-5xl font-bold text-center text-[#032b41] mb-10">
           Choose the plan that fits you
         </h2>
 
-        {/* Yearly Plan Card */}
-        <div 
+        {/* YEARLY */}
+
+        <div
           onClick={() => setSelectedPlan("yearly")}
-          className={`border-2 rounded-xl p-6 cursor-pointer transition flex items-center justify-between ${
-            selectedPlan === "yearly" ? "border-[#2bd97c] bg-slate-50/50" : "border-slate-200"
+          className={`cursor-pointer p-8 border-4 rounded-sm transition ${
+            selectedPlan === "yearly"
+              ? "border-[#2bd97c]"
+              : "border-[#c6d1d4]"
           }`}
         >
-          <div className="flex items-center gap-4">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-              selectedPlan === "yearly" ? "border-[#2bd97c]" : "border-slate-400"
-            }`}>
-              {selectedPlan === "yearly" && <div className="w-2.5 h-2.5 bg-[#2bd97c] rounded-full" />}
+          <div className="flex items-start gap-6">
+            <div className="w-8 h-8 rounded-full border-2 border-black flex items-center justify-center mt-1">
+              {selectedPlan === "yearly" && (
+                <div className="w-3 h-3 rounded-full bg-black" />
+              )}
             </div>
+
             <div>
-              <h4 className="font-bold text-base">Premium Plus Yearly</h4>
-              <p className="text-xs text-slate-500">7-day free trial included</p>
+              <h3 className="font-bold text-[#032b41] text-3xl">
+                Premium Plus Yearly
+              </h3>
+
+              <p className="font-bold text-[#032b41] text-5xl mt-2">
+                $99.99/year
+              </p>
+
+              <p className="text-gray-500 mt-3">
+                7-day free trial included
+              </p>
             </div>
-          </div>
-          <div className="text-right">
-            <span className="text-lg font-bold">$99.99</span>
-            <span className="text-xs text-slate-500">/year</span>
           </div>
         </div>
 
-        {/* Monthly Plan Card */}
-        <div 
+        {/* OR */}
+
+        <div className="flex items-center my-8">
+          <div className="flex-1 h-px bg-gray-300" />
+          <span className="mx-6 text-gray-500">or</span>
+          <div className="flex-1 h-px bg-gray-300" />
+        </div>
+
+        {/* MONTHLY */}
+
+        <div
           onClick={() => setSelectedPlan("monthly")}
-          className={`border-2 rounded-xl p-6 cursor-pointer transition flex items-center justify-between ${
-            selectedPlan === "monthly" ? "border-[#2bd97c] bg-slate-50/50" : "border-slate-200"
+          className={`cursor-pointer p-8 border-4 rounded-sm transition ${
+            selectedPlan === "monthly"
+              ? "border-[#2bd97c]"
+              : "border-[#c6d1d4]"
           }`}
         >
-          <div className="flex items-center gap-4">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-              selectedPlan === "monthly" ? "border-[#2bd97c]" : "border-slate-400"
-            }`}>
-              {selectedPlan === "monthly" && <div className="w-2.5 h-2.5 bg-[#2bd97c] rounded-full" />}
+          <div className="flex items-start gap-6">
+            <div className="w-8 h-8 rounded-full border-2 border-black flex items-center justify-center mt-1">
+              {selectedPlan === "monthly" && (
+                <div className="w-3 h-3 rounded-full bg-black" />
+              )}
             </div>
+
             <div>
-              <h4 className="font-bold text-base">Premium Monthly</h4>
-              <p className="text-xs text-slate-500">No trial included</p>
+              <h3 className="font-bold text-[#032b41] text-3xl">
+                Premium Monthly
+              </h3>
+
+              <p className="font-bold text-[#032b41] text-5xl mt-2">
+                $9.99/month
+              </p>
+
+              <p className="text-gray-500 mt-3">
+                No trial included
+              </p>
             </div>
-          </div>
-          <div className="text-right">
-            <span className="text-lg font-bold">$9.99</span>
-            <span className="text-xs text-slate-500">/month</span>
           </div>
         </div>
 
-        {/* CTA Button */}
-        <div className="text-center pt-4 space-y-2">
-          <button
-            onClick={handleStartTrial}
-            className="w-full bg-[#2bd97c] hover:bg-[#20b868] text-slate-900 font-bold py-4 rounded-xl transition shadow-md text-base"
-          >
+        <div className="text-center mt-12">
+          <button className="bg-[#2bd97c] hover:bg-[#22c866] text-[#032b41] px-12 py-4 rounded font-medium text-xl">
             Start your free 7-day trial
           </button>
-          <p className="text-[11px] text-slate-500">
-            Cancel your trial at any time before it ends, and you won’t be charged.
+
+          <p className="text-gray-500 mt-4">
+            Cancel your trial at any time before it ends,
+            and you won&apos;t be charged.
           </p>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="max-w-3xl mx-auto px-6 py-16 space-y-4">
-        <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+      {/* FAQ */}
 
-        {/* FAQ Item 1 */}
-        <div className="border-b border-slate-200 pb-4">
-          <button 
-            onClick={() => toggleFaq(0)} 
-            className="w-full flex items-center justify-between font-bold text-left py-2 text-lg"
+      <section className="max-w-6xl mx-auto px-6 pt-20">
+        {faqs.map((faq, index) => (
+          <div
+            key={index}
+            className="border-b border-gray-300 py-8"
           >
-            <span>How does the free 7-day trial work?</span>
-            <span>{openFaq === 0 ? "▲" : "▼"}</span>
-          </button>
-          {openFaq === 0 && (
-            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
-              Begin your complimentary 7-day trial with a Summarist annual membership. You are under no obligation to continue your subscription, and you will only be billed when the trial period expires. With Premium access, you can learn at your own pace and as frequently as you desire, and you may terminate your subscription prior to the conclusion of the 7-day free trial.
-            </p>
-          )}
-        </div>
+            <button
+              onClick={() =>
+                setOpenFaq(openFaq === index ? -1 : index)
+              }
+              className="w-full flex justify-between items-center text-left"
+            >
+              <span className="font-bold text-[#032b41] text-4xl">
+                {faq.question}
+              </span>
 
-        {/* FAQ Item 2 */}
-        <div className="border-b border-slate-200 pb-4">
-          <button 
-            onClick={() => toggleFaq(1)} 
-            className="w-full flex items-center justify-between font-bold text-left py-2 text-lg"
-          >
-            <span>Can I switch subscriptions from monthly to yearly, or yearly to monthly?</span>
-            <span>{openFaq === 1 ? "▲" : "▼"}</span>
-          </button>
-          {openFaq === 1 && (
-            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
-              Yes, you can easily switch your subscription plan at any time through your account settings.
-            </p>
-          )}
-        </div>
+              <span className="text-4xl text-[#032b41]">
+                {openFaq === index ? "⌃" : "⌄"}
+              </span>
+            </button>
 
-        {/* FAQ Item 3 */}
-        <div className="border-b border-slate-200 pb-4">
-          <button 
-            onClick={() => toggleFaq(2)} 
-            className="w-full flex items-center justify-between font-bold text-left py-2 text-lg"
-          >
-            <span>What's included in the Premium plan?</span>
-            <span>{openFaq === 2 ? "▲" : "▼"}</span>
-          </button>
-          {openFaq === 2 && (
-            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
-              Unlimited access to all book summaries, audio listening, key ideas, and offline reading capabilities.
-            </p>
-          )}
-        </div>
-
-        {/* FAQ Item 4 */}
-        <div className="border-b border-slate-200 pb-4">
-          <button 
-            onClick={() => toggleFaq(3)} 
-            className="w-full flex items-center justify-between font-bold text-left py-2 text-lg"
-          >
-            <span>Can I cancel during my trial or subscription?</span>
-            <span>{openFaq === 3 ? "▲" : "▼"}</span>
-          </button>
-          {openFaq === 3 && (
-            <p className="text-sm text-slate-600 mt-2 leading-relaxed">
-              Yes, you can cancel your subscription or trial at any time with just a few clicks in your settings.
-            </p>
-          )}
-        </div>
+            {openFaq === index && (
+              <p className="mt-8 text-[#032b41] text-2xl leading-relaxed max-w-6xl">
+                {faq.answer}
+              </p>
+            )}
+          </div>
+        ))}
       </section>
 
-      {/* Footer */}
-      <footer className="bg-slate-50 border-t border-slate-200 py-12">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm text-slate-600">
-          <div className="space-y-3">
-            <h4 className="font-bold text-[#032b41]">Actions</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Summarist Magazine</a></li>
-              <li><a href="#" className="hover:underline">Cancel Subscription</a></li>
-              <li><a href="#" className="hover:underline">Help</a></li>
-              <li><a href="#" className="hover:underline">Contact us</a></li>
-            </ul>
+      {/* FOOTER */}
+
+      <footer className="bg-[#edf3f2] mt-16 py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-4 gap-10">
+            <div>
+              <h3 className="font-bold text-[#032b41] text-2xl mb-4">
+                Actions
+              </h3>
+
+              <ul className="space-y-3 text-gray-600">
+                <li>Summarist Magazine</li>
+                <li>Cancel Subscription</li>
+                <li>Help</li>
+                <li>Contact us</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-[#032b41] text-2xl mb-4">
+                Useful Links
+              </h3>
+
+              <ul className="space-y-3 text-gray-600">
+                <li>Pricing</li>
+                <li>Summarist Business</li>
+                <li>Gift Cards</li>
+                <li>Authors & Publishers</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-[#032b41] text-2xl mb-4">
+                Company
+              </h3>
+
+              <ul className="space-y-3 text-gray-600">
+                <li>About</li>
+                <li>Careers</li>
+                <li>Partners</li>
+                <li>Code of Conduct</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-bold text-[#032b41] text-2xl mb-4">
+                Other
+              </h3>
+
+              <ul className="space-y-3 text-gray-600">
+                <li>Sitemap</li>
+                <li>Legal Notice</li>
+                <li>Terms of Service</li>
+                <li>Privacy Policies</li>
+              </ul>
+            </div>
           </div>
-          <div className="space-y-3">
-            <h4 className="font-bold text-[#032b41]">Useful Links</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Pricing</a></li>
-              <li><a href="#" className="hover:underline">Summarist Business</a></li>
-              <li><a href="#" className="hover:underline">Gift Cards</a></li>
-              <li><a href="#" className="hover:underline">Authors & Publishers</a></li>
-            </ul>
-          </div>
-          <div className="space-y-3">
-            <h4 className="font-bold text-[#032b41]">Company</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">About</a></li>
-              <li><a href="#" className="hover:underline">Careers</a></li>
-              <li><a href="#" className="hover:underline">Partners</a></li>
-              <li><a href="#" className="hover:underline">Code of Conduct</a></li>
-            </ul>
-          </div>
-          <div className="space-y-3">
-            <h4 className="font-bold text-[#032b41]">Other</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Sitemap</a></li>
-              <li><a href="#" className="hover:underline">Legal Notice</a></li>
-              <li><a href="#" className="hover:underline">Terms of Service</a></li>
-              <li><a href="#" className="hover:underline">Privacy Policies</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-6 mt-12 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">
-          Copyright © 2026 Summarist.
+
+          <p className="text-center text-[#032b41] font-semibold mt-20">
+            Copyright © 2023 Summarist.
+          </p>
         </div>
       </footer>
     </div>

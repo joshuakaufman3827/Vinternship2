@@ -1,11 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  Home,
+  Bookmark,
+  Pencil,
+  Search,
+  Settings,
+  CircleHelp,
+  LogOut,
+} from "lucide-react";
+import { FaBook } from "react-icons/fa";
+
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 
 export default function Sidebar() {
+  const pathname = usePathname();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -17,64 +29,97 @@ export default function Sidebar() {
     }
   };
 
-  return (
-    <aside className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col justify-between p-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[#032b41] mb-10">
-          Summarist
-        </h1>
+  const linkStyles = (path: string) =>
+    `flex items-center gap-4 py-4 pl-6 transition text-[#032b41]
+    ${
+      pathname === path
+        ? "border-l-4 border-[#2bd97c] bg-white font-semibold"
+        : "border-l-4 border-transparent hover:bg-gray-100"
+    }`;
 
-        <nav className="flex flex-col gap-4">
+  return (
+    <aside className="w-[250px] h-screen bg-[#f7f8f8] border-r border-gray-200 flex flex-col justify-between">
+
+      {/* TOP SECTION */}
+      <div>
+        {/* LOGO */}
+        <div className="flex items-center gap-3 px-6 py-8">
+         <FaBook
+  size={36}
+  className="text-[#032b41]"
+/>
+
+          <h1 className="text-3xl font-bold text-[#032b41]">
+            Summarist
+          </h1>
+        </div>
+
+        {/* NAVIGATION */}
+        <nav className="flex flex-col">
+
           <Link
             href="/for-you"
-            className="text-[#032b41] font-medium hover:text-[#2bd97c]"
+            className={linkStyles("/for-you")}
           >
-            For You
+            <Home size={22} />
+            <span>For You</span>
           </Link>
 
           <Link
-            href="/library"
-            className="text-[#032b41] font-medium hover:text-[#2bd97c]"
+            href="/my-library"
+            className={linkStyles("/my-library")}
           >
-            Library
+            <Bookmark size={22} />
+            <span>My Library</span>
           </Link>
 
           <button
-            className="text-left cursor-not-allowed text-gray-400"
+            className="flex items-center gap-4 py-4 pl-6 text-[#032b41]"
             disabled
           >
-            Highlights
-          </button>
-
-          <button
-            className="text-left cursor-not-allowed text-gray-400"
-            disabled
-          >
-            Search
+            <Pencil size={22} />
+            <span>Highlights</span>
           </button>
 
           <Link
-            href="/settings"
-            className="text-[#032b41] font-medium hover:text-[#2bd97c]"
+            href="/search"
+            className={linkStyles("/search")}
           >
-            Settings
+            <Search size={22} />
+            <span>Search</span>
           </Link>
 
-          <button
-            className="text-left cursor-not-allowed text-gray-400"
-            disabled
-          >
-            Help & Support
-          </button>
         </nav>
       </div>
 
-     <button
-  onClick={handleLogout}
-  className="flex items-center gap-2"
->
-  Logout
-</button>
+      {/* BOTTOM SECTION */}
+      <div className="pb-8 flex flex-col">
+
+        <Link
+          href="/settings"
+          className={linkStyles("/settings")}
+        >
+          <Settings size={22} />
+          <span>Settings</span>
+        </Link>
+
+        <button
+          className="flex items-center gap-4 py-4 pl-6 text-[#032b41]"
+          disabled
+        >
+          <CircleHelp size={22} />
+          <span>Help & Support</span>
+        </button>
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-4 py-4 pl-6 text-[#032b41] hover:bg-gray-100 transition"
+        >
+          <LogOut size={22} />
+          <span>Logout</span>
+        </button>
+
+      </div>
     </aside>
   );
 }

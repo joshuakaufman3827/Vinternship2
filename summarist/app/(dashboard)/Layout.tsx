@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Search, Home, Bookmark, LogOut } from "lucide-react";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
+import Sidebar from "../components/SideBar";
 
 export default function DashboardLayout({
   children,
@@ -33,44 +34,7 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar Navigation */}
-      <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col justify-between p-6">
-        <div>
-          <div className="text-xl font-bold text-[#032b41] mb-10">Summarist</div>
-          <nav className="space-y-2">
-            <button
-              onClick={() => router.push("/for-you")}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition ${
-                pathname === "/for-you"
-                  ? "bg-emerald-50 text-emerald-600"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              <Home className="w-5 h-5" />
-              For You
-            </button>
-            <button
-              onClick={() => router.push("/my-library")}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition ${
-                pathname === "/my-library"
-                  ? "bg-emerald-50 text-emerald-600"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              <Bookmark className="w-5 h-5" />
-              My Library
-            </button>
-          </nav>
-        </div>
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition w-full"
-        >
-          <LogOut className="w-5 h-5" />
-          Logout
-        </button>
-      </aside>
+  <Sidebar />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
