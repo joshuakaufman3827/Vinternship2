@@ -58,12 +58,23 @@ export default function ForYouPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-medium text-slate-500 animate-pulse">Loading books...</p>
+  return (
+    <div className="animate-pulse space-y-8">
+      <div className="h-8 w-64 bg-slate-200 rounded"></div>
+
+      <div className="h-56 bg-slate-200 rounded-2xl"></div>
+
+      <div className="grid grid-cols-5 gap-4">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="h-72 bg-slate-200 rounded-xl"
+          />
+        ))}
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto text-[#032b41]">

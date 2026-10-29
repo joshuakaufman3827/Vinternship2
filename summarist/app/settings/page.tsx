@@ -18,15 +18,17 @@ export default function SettingsPage() {
     return () => unsubscribe();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="animate-pulse text-slate-500">
-          Loading settings...
-        </p>
-      </div>
-    );
-  }
+if (loading) {
+  return (
+    <div className="animate-pulse max-w-4xl mx-auto p-8 space-y-6">
+      <div className="h-10 w-48 bg-slate-200 rounded"></div>
+
+      <div className="h-40 bg-slate-200 rounded-xl"></div>
+
+      <div className="h-40 bg-slate-200 rounded-xl"></div>
+    </div>
+  );
+}
 
   if (!user) {
     return (

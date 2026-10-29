@@ -78,14 +78,20 @@ function PlayerContent() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-medium text-slate-500 animate-pulse">
-          Loading player...
-        </p>
+  return (
+    <div className="animate-pulse p-8">
+      <div className="h-8 w-80 bg-slate-200 rounded mx-auto mb-8"></div>
+
+      <div className="max-w-4xl mx-auto space-y-4">
+        <div className="h-6 bg-slate-200 rounded"></div>
+        <div className="h-6 bg-slate-200 rounded"></div>
+        <div className="h-6 bg-slate-200 rounded"></div>
+        <div className="h-6 bg-slate-200 rounded"></div>
+        <div className="h-6 bg-slate-200 rounded"></div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   if (!book) {
     return (

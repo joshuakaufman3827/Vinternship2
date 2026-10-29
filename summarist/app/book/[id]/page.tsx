@@ -69,12 +69,27 @@ function BookDetailsContent() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-medium text-slate-500 animate-pulse">Loading book details...</p>
+  return (
+    <div className="animate-pulse max-w-6xl mx-auto p-8">
+      <div className="flex gap-10">
+        <div className="flex-1 space-y-4">
+          <div className="h-10 w-96 bg-slate-200 rounded"></div>
+          <div className="h-6 w-80 bg-slate-200 rounded"></div>
+          <div className="h-6 w-40 bg-slate-200 rounded"></div>
+
+          <div className="h-20 bg-slate-200 rounded"></div>
+
+          <div className="flex gap-4">
+            <div className="h-12 w-32 bg-slate-200 rounded"></div>
+            <div className="h-12 w-32 bg-slate-200 rounded"></div>
+          </div>
+        </div>
+
+        <div className="w-64 h-96 bg-slate-200 rounded-xl"></div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   if (!book) {
     return (
