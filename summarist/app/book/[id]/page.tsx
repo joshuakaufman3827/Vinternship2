@@ -53,19 +53,12 @@ function BookDetailsContent() {
     fetchBookDetails();
   }, [id]);
 
-  const handleAction = (actionType: 'read' | 'listen') => {
-    if (!auth.currentUser) {
-      openModal("login");
-      return;
-    }
+  const handleAction = (actionType: "read" | "listen") => {
+  console.log("Current User:", auth.currentUser);
+  console.log("Book:", book);
 
-    if (book?.subscriptionRequired) {
-      router.push("/choose-plan");
-      return;
-    }
-
-    router.push(`/player/${id}`);
-  };
+  router.push(`/player/${id}`);
+};
 
   const handleAddToLibrary = () => {
     if (!auth.currentUser) {
