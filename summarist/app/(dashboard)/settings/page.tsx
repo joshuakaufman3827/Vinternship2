@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { auth } from "../firebase";
+import { auth } from "../../firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 
 export default function SettingsPage() {
