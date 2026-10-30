@@ -1,125 +1,157 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { signOut } from 'firebase/auth';
 import {
-  Home,
   Bookmark,
+  CircleHelp,
+  Home,
+  LogOut,
   Pencil,
   Search,
   Settings,
-  CircleHelp,
-  LogOut,
-} from "lucide-react";
-import { FaBook } from "react-icons/fa";
+  type LucideIcon,
+} from 'lucide-react';
 
-import { auth } from "../firebase";
-import { signOut } from "firebase/auth";
+import { auth } from '../firebase';
+import { useAuth } from '../context/AuthContext';
+import { useAuthModal } from '../context/AuthModalContext';
 
-export default function Sidebar() {
-  const pathname = usePathname();
-  const router = useRouter();
+// border-l-4 + pl-4 puts the icon 20px from the edge; the green bar marks the active page.
+const rowClass =
+  'flex w-full items-center gap-2 border-l-4 py-5 pl-4 text-base font-normal text-[#032b41]';
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      router.push("/");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
+function NavItem({
+  icon: Icon,
+  label,
+  href,
+  active = false,
+  onNavigate,
+}: {
+  icon: LucideIcon;
+  label: string;
+  href?: string;
+  active?: boolean;
+  onNavigate?: () => void;
+}) {
+  const content = (
+    <>
+      <Icon size={22} aria-hidden="true" />
+      <span>{label}</span>
+    </>
+  );
 
-  const linkStyles = (path: string) =>
-    `flex items-center gap-4 py-4 pl-6 transition text-[#032b41]
-    ${
-      pathname === path
-        ? "border-l-4 border-[#2bd97c] bg-white font-semibold"
-        : "border-l-4 border-transparent hover:bg-gray-100"
-    }`;
+  // No href = not built yet (Highlights, Search, Help & Support): show the not-allowed cursor.
+  if (!href) {
+    return (
+      <button
+        type="button"
+        disabled
+        className={`${rowClass} cursor-not-allowed border-transparent`}
+      >
+        {content}
+      </button>
+    );
+  }
 
   return (
-    <aside className="w-[250px] h-screen bg-[#f7f8f8] border-r border-gray-200 flex flex-col justify-between">
+    <Link
+      href={href}
+      onClick={onNavigate}
+      className={`${rowClass} transition-colors hover:bg-[#eef3f1] ${
+        active ? 'border-[#2bd97c]' : 'border-transparent'
+      }`}
+    >
+      {content}
+    </Link>
+  );
+}
 
-      {/* TOP SECTION */}
-      <div>
-        {/* LOGO */}
-        <div className="flex items-center gap-3 px-6 py-8">
-         <FaBook
-  size={36}
-  className="text-[#032b41]"
-/>
+function AuthItem({ onNavigate }: { onNavigate: () => void }) {
+  const { user, loading } = useAuth();
+  const { openModal } = useAuthModal();
 
-          <h1 className="text-3xl font-bold text-[#032b41]">
-            Summarist
-          </h1>
+  // Don't flash "Login" for a logged-in user while Firebase is still checking.
+  if (loading) {
+    return (
+      <div className="border-l-4 border-transparent py-5 pl-4" aria-hidden="true">
+        <div className="h-6 w-24 animate-pulse bg-[#e1e7ea]" />
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        if (user) {
+          signOut(auth);
+        } else {
+          openModal('login');
+        }
+        onNavigate();
+      }}
+      className={`${rowClass} cursor-pointer border-transparent transition-colors hover:bg-[#eef3f1]`}
+    >
+      <LogOut size={22} aria-hidden="true" />
+      <span>{user ? 'Logout' : 'Login'}</span>
+    </button>
+  );
+}
+
+export default function Sidebar({
+  open = false,
+  onClose = () => {},
+}: {
+  open?: boolean;
+  onClose?: () => void;
+}) {
+  const pathname = usePathname();
+
+  return (
+    <>
+      {/* Dark backdrop behind the sidebar on phones. */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[200px] shrink-0 flex-col justify-between border-r border-[#e1e7ea] bg-[#f7faf9] transition-transform duration-200 md:sticky md:top-0 md:z-auto md:translate-x-0 ${
+          open ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div>
+          <div className="px-4 py-5">
+            <Image
+              src="/home/logo.png"
+              alt="Summarist"
+              width={160}
+              height={37}
+              priority
+              className="h-auto w-[160px]"
+            />
+          </div>
+
+          <nav className="mt-2 flex flex-col">
+            <NavItem icon={Home} label="For you" href="/for-you" active={pathname === '/for-you'} onNavigate={onClose} />
+            <NavItem icon={Bookmark} label="My Library" href="/library" active={pathname === '/library'} onNavigate={onClose} />
+            <NavItem icon={Pencil} label="Highlights" />
+            <NavItem icon={Search} label="Search" />
+          </nav>
         </div>
 
-        {/* NAVIGATION */}
-        <nav className="flex flex-col">
-
-          <Link
-            href="/for-you"
-            className={linkStyles("/for-you")}
-          >
-            <Home size={22} />
-            <span>For You</span>
-          </Link>
-
-          <Link
-            href="/my-library"
-            className={linkStyles("/my-library")}
-          >
-            <Bookmark size={22} />
-            <span>My Library</span>
-          </Link>
-
-          <button
-            className="flex items-center gap-4 py-4 pl-6 text-[#032b41]"
-            disabled
-          >
-            <Pencil size={22} />
-            <span>Highlights</span>
-          </button>
-
-          <Link
-            href="/search"
-            className={linkStyles("/search")}
-          >
-            <Search size={22} />
-            <span>Search</span>
-          </Link>
-
-        </nav>
-      </div>
-
-      {/* BOTTOM SECTION */}
-      <div className="pb-8 flex flex-col">
-
-        <Link
-          href="/settings"
-          className={linkStyles("/settings")}
-        >
-          <Settings size={22} />
-          <span>Settings</span>
-        </Link>
-
-        <button
-          className="flex items-center gap-4 py-4 pl-6 text-[#032b41]"
-          disabled
-        >
-          <CircleHelp size={22} />
-          <span>Help & Support</span>
-        </button>
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-4 py-4 pl-6 text-[#032b41] hover:bg-gray-100 transition"
-        >
-          <LogOut size={22} />
-          <span>Logout</span>
-        </button>
-
-      </div>
-    </aside>
+        <div className="flex flex-col pb-6">
+          <NavItem icon={Settings} label="Settings" href="/settings" active={pathname === '/settings'} onNavigate={onClose} />
+          <NavItem icon={CircleHelp} label="Help & Support" />
+          <AuthItem onNavigate={onClose} />
+        </div>
+      </aside>
+    </>
   );
 }
