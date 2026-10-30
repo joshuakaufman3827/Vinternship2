@@ -1,70 +1,56 @@
-"use client";
-import { auth } from "../firebase";
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signInAnonymously,
-} from "firebase/auth";
-import { createContext, useContext, useState } from "react";
+'use client';
 
-interface AuthModalContextType {
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
+import AuthModal from '../components/AuthModal';
+
+export type AuthMode = 'login' | 'register';
+
+interface AuthModalContextValue {
   isOpen: boolean;
-  mode: "login" | "register";
-  openModal: (mode?: "login" | "register") => void;
+  mode: AuthMode;
+  openModal: (mode?: AuthMode) => void;
   closeModal: () => void;
-  login: (email: string, password: string) => Promise<any>;
-  register: (email: string, password: string) => Promise<any>;
-  guestLogin: () => Promise<any>;
 }
 
-const AuthModalContext = createContext<AuthModalContextType | undefined>(undefined);
+const AuthModalContext = createContext<AuthModalContextValue | null>(null);
 
-export const AuthModalProvider = ({ children }: { children: React.ReactNode }) => {
+export function AuthModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<AuthMode>('login');
 
-  const openModal = (newMode: "login" | "register" = "login") => {
-    setMode(newMode);
+  const openModal = useCallback((nextMode: AuthMode = 'login') => {
+    setMode(nextMode);
     setIsOpen(true);
-  };
+  }, []);
 
-  const closeModal = () => setIsOpen(false);
+  const closeModal = useCallback(() => setIsOpen(false), []);
 
-  // ⭐ Firebase Auth functions
-  const login = (email: string, password: string) => {
-    return signInWithEmailAndPassword(auth, email, password);
-  };
-
-  const register = (email: string, password: string) => {
-    return createUserWithEmailAndPassword(auth, email, password);
-  };
-
-  const guestLogin = () => {
-    return signInWithEmailAndPassword(auth, "guest@gmail.com", "guest123");
-  };
+  const value = useMemo(
+    () => ({ isOpen, mode, openModal, closeModal }),
+    [isOpen, mode, openModal, closeModal]
+  );
 
   return (
-    <AuthModalContext.Provider
-      value={{
-        isOpen,
-        mode,
-        openModal,
-        closeModal,
-        login,
-        register,
-        guestLogin,
-      }}
-    >
+    <AuthModalContext.Provider value={value}>
       {children}
+      {/* One modal for the whole app. Mounted only while open, so fields and errors reset each time. */}
+      {isOpen && <AuthModal isOpen onClose={closeModal} initialMode={mode} />}
     </AuthModalContext.Provider>
   );
-};
+}
 
-export const useAuthModal = () => {
+export function useAuthModal() {
   const context = useContext(AuthModalContext);
   if (!context) {
-    throw new Error("useAuthModal must be used within AuthModalProvider");
+    throw new Error('useAuthModal must be used inside <AuthModalProvider>');
   }
   return context;
-};
+}
 
