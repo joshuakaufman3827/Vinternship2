@@ -1,92 +1,108 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { auth } from "../../firebase";
-import { useAuthModal } from "../../context/AuthModalContext";
+import Image from 'next/image';
+import Link from 'next/link';
 
-interface Book {
-  id: string;
-  author: string;
+import BookCard from '../../components/BookCard';
+import { useAuth } from '../../context/AuthContext';
+import { useAuthModal } from '../../context/AuthModalContext';
+import { useLibrary } from '../../hooks/useLibrary';
+import type { Book } from '../../lib/books';
+
+function Section({
+  title,
+  books,
+  emptyTitle,
+  emptyText,
+}: {
   title: string;
-  subTitle: string;
-  imageLink: string;
-  subscriptionRequired: boolean;
+  books: Book[];
+  emptyTitle: string;
+  emptyText: string;
+}) {
+  return (
+    <section className="mt-10 first:mt-0">
+      <h2 className="text-2xl font-bold">{title}</h2>
+      <p className="mt-4 text-base font-light text-[#6b757b]">
+        {books.length} {books.length === 1 ? 'item' : 'items'}
+      </p>
+
+      {books.length === 0 ? (
+        <div className="mt-4 rounded-sm bg-[#f1f6f4] p-6">
+          <h3 className="text-lg font-bold">{emptyTitle}</h3>
+          <p className="mt-1 text-base font-light text-[#394547]">{emptyText}</p>
+          <Link
+            href="/for-you"
+            className="mt-4 flex h-10 w-full max-w-[200px] items-center justify-center rounded-sm bg-[#2bd97c] text-base text-[#032b41] transition-colors hover:bg-[#20ba68]"
+          >
+            Browse books
+          </Link>
+        </div>
+      ) : (
+        <div className="mt-6 flex gap-1 overflow-x-auto pb-4">
+          {books.map((book) => (
+            <BookCard key={book.id} book={book} />
+          ))}
+        </div>
+      )}
+    </section>
+  );
 }
 
-export default function MyLibraryPage() {
-  const router = useRouter();
+function LibrarySkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-[1070px] animate-pulse px-6 py-6" aria-hidden="true">
+      <div className="h-9 w-40 bg-[#e1e7ea]" />
+      <div className="mt-6 h-6 w-32 bg-[#e1e7ea]" />
+      <div className="mt-4 h-28 w-full bg-[#e1e7ea]" />
+    </div>
+  );
+}
+
+export default function LibraryPage() {
+  const { user, loading: authLoading } = useAuth();
   const { openModal } = useAuthModal();
-  const [libraryBooks, setLibraryBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { saved, finished, loading } = useLibrary();
 
-  useEffect(() => {
-    // Check authentication state
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        setLoading(false);
-        openModal("login");
-        return;
-      }
-      
-      // TODO: Fetch user's saved library books from Firestore database
-      // For now, we initialize an empty array or mock data structure
-      setLibraryBooks([]);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [openModal]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-medium text-gray-500 animate-pulse">Loading your library...</p>
-      </div>
-    );
-  }
+  if (authLoading || (user && loading)) return <LibrarySkeleton />;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">
-        Saved Books <span className="text-lg font-normal text-gray-500">({libraryBooks.length})</span>
-      </h1>
-
-      {libraryBooks.length === 0 ? (
-        <div className="text-center py-20 bg-gray-50 rounded-2xl border border-gray-200">
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">Your library is empty</h3>
-          <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            When you find books you want to read later, add them to your library to access them quickly here.
-          </p>
+    <div className="mx-auto w-full max-w-[1070px] px-6 py-8 text-[#032b41]">
+      {!user ? (
+        <div className="flex flex-col items-center pt-4 text-center">
+          <h1 className="mb-6 w-full border-b border-[#e1e7ea] pb-4 text-left text-[32px] font-bold">My Library</h1>
+          <Image
+            src="/home/login.png"
+            alt="Log in to see your library"
+            width={400}
+            height={300}
+            priority
+            className="h-auto w-full max-w-[400px] object-contain"
+          />
+          <h2 className="mt-6 text-xl font-bold">Log in to your account to see your library.</h2>
           <button
-            onClick={() => router.push("/for-you")}
-            className="bg-emerald-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-emerald-700 transition"
+            type="button"
+            onClick={() => openModal('login')}
+            className="mt-4 flex h-10 w-[180px] cursor-pointer items-center justify-center rounded-sm bg-[#2bd97c] text-base text-[#032b41] transition-colors hover:bg-[#20ba68]"
           >
-            Explore Books
+            Login
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {libraryBooks.map((book) => (
-            <div
-              key={book.id}
-              onClick={() => router.push(`/book/${book.id}`)}
-              className="bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition relative flex flex-col justify-between"
-            >
-              {book.subscriptionRequired && (
-                <span className="absolute top-3 right-3 bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded">
-                  Premium
-                </span>
-              )}
-              <div>
-                <img src={book.imageLink} alt={book.title} className="w-full h-48 object-cover rounded mb-3" />
-                <h3 className="font-bold text-gray-900 text-base mb-1 line-clamp-1">{book.title}</h3>
-                <p className="text-xs text-gray-600 mb-2">{book.author}</p>
-              </div>
-              <p className="text-xs text-gray-500 line-clamp-2">{book.subTitle}</p>
-            </div>
-          ))}
-        </div>
+        <>
+          <Section
+            title="Saved Books"
+            books={saved}
+            emptyTitle="Save your favorite books!"
+            emptyText="When you save a book, it will appear here."
+          />
+          <Section
+            title="Finished"
+            books={finished}
+            emptyTitle="Done and dusted!"
+            emptyText="When you finish a book, you can find it here later."
+          />
+        </>
       )}
     </div>
   );

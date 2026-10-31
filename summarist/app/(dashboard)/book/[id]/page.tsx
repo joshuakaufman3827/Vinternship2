@@ -1,231 +1,222 @@
-"use client";
+'use client';
 
-import { useEffect, useState, Suspense } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useAuthModal } from "../../../context/AuthModalContext";
-import { auth } from "../../../firebase";
+import { Suspense, useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import type { IconType } from 'react-icons';
+import { AiOutlineBulb, AiOutlineClockCircle, AiOutlineStar } from 'react-icons/ai';
+import { BiBookOpen, BiMicrophone } from 'react-icons/bi';
+import { BsBookmark, BsBookmarkFill } from 'react-icons/bs';
 
-interface Book {
-  id: string;
-  author: string;
-  title: string;
-  subTitle?: string;
-  imageLink?: string;
-  audioLink?: string;
-  totalRating?: number;
-  averageRating?: number;
-  keyIdeas?: number;
-  type?: string;
-  status?: string;
-  subscriptionRequired?: boolean;
-  summary?: string;
-  tags?: string[];
-  bookDescription?: string;
-  authorDescription?: string;
+import { useAuth } from '../../../context/AuthContext';
+import { useAuthModal } from '../../../context/AuthModalContext';
+import { useAudioDuration } from '../../../hooks/useAudioDuration';
+import { useLibrary } from '../../../hooks/useLibrary';
+import { useSubscription } from '../../../hooks/useSubscription';
+import { fetchBookById, formatClock, type Book } from '../../../lib/books';
+
+type Status = 'loading' | 'ready' | 'notFound' | 'error';
+
+// "audio & text" -> "Audio & Text"
+function formatType(type: string): string {
+  return type
+    .split(' ')
+    .map((word) => (word ? word[0].toUpperCase() + word.slice(1) : word))
+    .join(' ');
 }
 
-function BookDetailsContent() {
-  const params = useParams();
-  const id = params?.id as string;
-
-  const router = useRouter();
-  const { openModal } = useAuthModal();
-
-  const [book, setBook] = useState<Book | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!id) return;
-
-    async function fetchBookDetails() {
-      try {
-        const res = await fetch(
-          `https://us-central1-summaristt.cloudfunctions.net/getBook?id=${id}`
-        );
-
-        const data = await res.json();
-        setBook(data);
-      } catch (error) {
-        console.error("Failed to fetch book details:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchBookDetails();
-  }, [id]);
-
-  const handleReadOrListen = () => {
-    if (!auth.currentUser) {
-      openModal("login");
-      return;
-    }
-
-    if (book?.subscriptionRequired) {
-      router.push("/choose-plan");
-      return;
-    }
-
-    router.push(`/player/${id}`);
-  };
-
-  const handleAddToLibrary = () => {
-    if (!auth.currentUser) {
-      openModal("login");
-      return;
-    }
-
-    alert("Book added to library!");
-  };
-
-  if (loading) {
-    return (
-      <div className="animate-pulse max-w-6xl mx-auto p-8">
-        <div className="flex gap-10">
-          <div className="flex-1 space-y-4">
-            <div className="h-10 w-96 bg-slate-200 rounded"></div>
-            <div className="h-6 w-80 bg-slate-200 rounded"></div>
-            <div className="h-6 w-48 bg-slate-200 rounded"></div>
-
-            <div className="h-24 bg-slate-200 rounded"></div>
-
-            <div className="flex gap-4">
-              <div className="h-12 w-32 bg-slate-200 rounded"></div>
-              <div className="h-12 w-32 bg-slate-200 rounded"></div>
-            </div>
-          </div>
-
-          <div className="w-64 h-96 bg-slate-200 rounded-xl"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!book) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-semibold text-slate-700">
-          Book not found.
-        </p>
-      </div>
-    );
-  }
-
+function BookSkeleton() {
   return (
-    <div className="max-w-5xl mx-auto p-8 text-[#032b41]">
-      <div className="flex flex-col md:flex-row gap-12 mb-12 items-start">
-        <div className="flex-1 space-y-6">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
-              {book.title}
-            </h1>
-
-            <p className="text-slate-600 mb-2">
-              {book.subTitle}
-            </p>
-
-            <p className="font-semibold">
-              By {book.author}
-            </p>
+    <div className="mx-auto w-full max-w-[1070px] animate-pulse px-6 py-10" aria-hidden="true">
+      <div className="flex flex-col items-center gap-10 lg:flex-row-reverse lg:items-start lg:gap-4">
+        <div className="aspect-square w-full max-w-[300px] shrink-0 bg-[#e1e7ea]" />
+        <div className="w-full flex-1 space-y-4">
+          <div className="h-8 w-3/4 bg-[#e1e7ea]" />
+          <div className="h-4 w-32 bg-[#e1e7ea]" />
+          <div className="h-6 w-2/3 bg-[#e1e7ea]" />
+          <div className="h-20 w-full bg-[#e1e7ea]" />
+          <div className="flex gap-4">
+            <div className="h-12 w-36 bg-[#e1e7ea]" />
+            <div className="h-12 w-36 bg-[#e1e7ea]" />
           </div>
-
-          <div className="py-4 border-y border-slate-200 grid grid-cols-2 gap-4 text-sm">
-            <div>
-              ⭐ {book.averageRating || 4.4}
-            </div>
-
-            <div>
-              ⏱️ 03:24
-            </div>
-
-            <div>
-              🎤 Audio & Text
-            </div>
-
-            <div>
-              💡 {book.keyIdeas || 8} Key ideas
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-4">
-            <button
-              onClick={handleReadOrListen}
-              className="bg-[#032b41] text-white px-8 py-3 rounded-lg"
-            >
-              📖 Read
-            </button>
-
-            <button
-              onClick={handleReadOrListen}
-              className="bg-[#032b41] text-white px-8 py-3 rounded-lg"
-            >
-              🎧 Listen
-            </button>
-          </div>
-
-          <button
-            onClick={handleAddToLibrary}
-            className="text-[#2bd97c] font-semibold"
-          >
-            📌 Add title to My Library
-          </button>
-        </div>
-
-        <div className="w-full md:w-80 flex justify-center">
-          {book.imageLink && (
-            <img
-              src={book.imageLink}
-              alt={book.title}
-              className="w-64 h-96 object-cover rounded-xl shadow-md"
-            />
-          )}
-        </div>
-      </div>
-
-      <div className="border-t border-slate-200 pt-8 space-y-6">
-        <h2 className="text-2xl font-bold">
-          What's it about?
-        </h2>
-
-        <div className="flex flex-wrap gap-2">
-          {book.tags?.map((tag, index) => (
-            <span
-              key={index}
-              className="bg-slate-100 px-4 py-2 rounded-lg text-sm font-semibold"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        <p className="leading-relaxed">
-          {book.bookDescription}
-        </p>
-
-        <div>
-          <h3 className="text-xl font-bold mb-4">
-            About the author
-          </h3>
-
-          <p className="leading-relaxed">
-            {book.authorDescription}
-          </p>
+          <div className="h-6 w-56 bg-[#e1e7ea]" />
+          <div className="h-24 w-full bg-[#e1e7ea]" />
         </div>
       </div>
     </div>
   );
 }
 
-export default function BookDetailsPage() {
+function BookDetails({ id }: { id: string }) {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+  const { openModal } = useAuthModal();
+  const { isSubscribed } = useSubscription();
+  const { isSaved, saveBook, unsaveBook } = useLibrary();
+
+  const [book, setBook] = useState<Book | null>(null);
+  const [status, setStatus] = useState<Status>('loading');
+  const [libraryError, setLibraryError] = useState('');
+  const duration = useAudioDuration(book?.audioLink);
+  const saved = book ? isSaved(book.id) : false;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchBookById(id)
+      .then((found) => {
+        if (cancelled) return;
+        setBook(found);
+        setStatus(found ? 'ready' : 'notFound');
+      })
+      .catch(() => {
+        if (!cancelled) setStatus('error');
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const handleReadOrListen = () => {
+    if (!book || authLoading) return;
+    if (!user) {
+      openModal('login');
+      return;
+    }
+    if (book.subscriptionRequired && !isSubscribed) {
+      router.push('/choose-plan');
+      return;
+    }
+    router.push(`/player/${book.id}`);
+  };
+
+  const handleToggleLibrary = async () => {
+    if (!book || authLoading) return;
+    if (!user) {
+      openModal('login');
+      return;
+    }
+    setLibraryError('');
+    try {
+      if (isSaved(book.id)) await unsaveBook(book.id);
+      else await saveBook(book);
+    } catch {
+      setLibraryError('Could not update your library. Please try again.');
+    }
+  };
+
+  if (status === 'loading') return <BookSkeleton />;
+
+  if (status === 'error') {
+    return (
+      <p className="mx-auto max-w-[1070px] px-6 py-10 text-base text-[#394547]">
+        We couldn’t load this book. Please refresh the page and try again.
+      </p>
+    );
+  }
+
+  if (!book) {
+    return (
+      <p className="mx-auto max-w-[1070px] px-6 py-10 text-base text-[#394547]">
+        Book not found.
+      </p>
+    );
+  }
+
+  const stats: { icon: IconType; text: string }[] = [
+    { icon: AiOutlineStar, text: `${book.averageRating} (${book.totalRating} ratings)` },
+    { icon: AiOutlineClockCircle, text: duration === null ? '--:--' : formatClock(duration) },
+    { icon: BiMicrophone, text: formatType(book.type) },
+    { icon: AiOutlineBulb, text: `${book.keyIdeas} Key ideas` },
+  ];
+
   return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center min-h-screen">
-          Loading...
+    <div className="mx-auto w-full max-w-[1070px] px-6 py-10 text-[#032b41]">
+      {/* Stacked on narrower screens (image first); image on the right from lg up. */}
+      <div className="flex flex-col items-center gap-10 lg:flex-row-reverse lg:items-start lg:gap-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={book.imageLink} alt={book.title} className="h-auto w-full max-w-[300px] shrink-0" />
+
+        <div className="w-full min-w-0 flex-1">
+          <h1 className="text-[32px] font-bold leading-[1.2]">{book.title}</h1>
+          <p className="mt-4 text-base font-bold">{book.author}</p>
+          <p className="mt-4 text-xl font-light text-[#394547]">{book.subTitle}</p>
+
+          <div className="mt-4 border-y border-[#e1e7ea] py-4">
+            <div className="grid max-w-[400px] grid-cols-2 gap-4 text-sm font-medium">
+              {stats.map(({ icon: Icon, text }) => (
+                <div key={text} className="flex items-center gap-2">
+                  <Icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+                  <span>{text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 flex gap-4">
+            <button
+              type="button"
+              onClick={handleReadOrListen}
+              className="flex h-12 w-36 cursor-pointer items-center justify-center gap-2 rounded-sm bg-[#032b41] text-base text-white transition-opacity hover:opacity-90"
+            >
+              <BiBookOpen className="h-6 w-6" aria-hidden="true" />
+              Read
+            </button>
+            <button
+              type="button"
+              onClick={handleReadOrListen}
+              className="flex h-12 w-36 cursor-pointer items-center justify-center gap-2 rounded-sm bg-[#032b41] text-base text-white transition-opacity hover:opacity-90"
+            >
+              <BiMicrophone className="h-6 w-6" aria-hidden="true" />
+              Listen
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleToggleLibrary}
+            className="mt-6 flex cursor-pointer items-center gap-2 text-lg font-medium text-[#0365f2] hover:underline"
+          >
+            {saved ? (
+              <BsBookmarkFill className="h-5 w-5" aria-hidden="true" />
+            ) : (
+              <BsBookmark className="h-5 w-5" aria-hidden="true" />
+            )}
+            {saved ? 'Saved in My Library' : 'Add title to My Library'}
+          </button>
+          {libraryError && <p className="mt-2 text-sm text-red-600">{libraryError}</p>}
+
+          <h2 className="mt-8 text-lg font-bold">What’s it about?</h2>
+          <div className="mt-4 flex flex-wrap gap-4">
+            {book.tags?.map((tag) => (
+              <span key={tag} className="rounded-sm bg-[#f1f6f4] px-4 py-3 text-base font-medium">
+                {tag}
+              </span>
+            ))}
+          </div>
+          <p className="mt-4 text-base leading-6">{book.bookDescription}</p>
+
+          <h2 className="mt-8 text-lg font-bold">About the author</h2>
+          <p className="mt-4 text-base leading-6">{book.authorDescription}</p>
         </div>
-      }
-    >
-      <BookDetailsContent />
+      </div>
+    </div>
+  );
+}
+
+// useParams() needs a Suspense boundary above it in Next 16.
+function BookRoute() {
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
+
+  // key={id} gives each book a fresh state, so moving between books (e.g. from search) starts clean.
+  return id ? <BookDetails key={id} id={id} /> : <BookSkeleton />;
+}
+
+export default function BookPage() {
+  return (
+    <Suspense fallback={<BookSkeleton />}>
+      <BookRoute />
     </Suspense>
   );
 }

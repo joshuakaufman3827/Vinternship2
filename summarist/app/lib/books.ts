@@ -31,6 +31,15 @@ export async function fetchBooksByStatus(
   return data ? [data as Book] : [];
 }
 
+// The book page endpoint. Returns null when no book matches the id.
+export async function fetchBookById(id: string): Promise<Book | null> {
+  const res = await fetch(`${API}/getBook?id=${encodeURIComponent(id)}`);
+  if (!res.ok) return null;
+  const data: unknown = await res.json();
+  const book = Array.isArray(data) ? data[0] : data;
+  return book && typeof book === 'object' && 'id' in book ? (book as Book) : null;
+}
+
 const pad = (n: number) => String(n).padStart(2, '0');
 
 // 204 seconds -> "03:24"

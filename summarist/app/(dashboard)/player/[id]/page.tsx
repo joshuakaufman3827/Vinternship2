@@ -1,223 +1,120 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useRef, Suspense } from "react";
-import { useParams } from "next/navigation";
+import { Suspense, useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 
-interface Book {
-  id: string;
-  author: string;
-  title: string;
-  subTitle: string;
-  imageLink: string;
-  audioLink: string;
-  summary: string;
-  bookDescription: string;
-}
+import AudioPlayer from '../../../components/AudioPlayer';
+import { useAuth } from '../../../context/AuthContext';
+import { useAuthModal } from '../../../context/AuthModalContext';
+import { useLibrary } from '../../../hooks/useLibrary';
+import { useSubscription } from '../../../hooks/useSubscription';
+import { fetchBookById, type Book } from '../../../lib/books';
 
-function PlayerContent() {
-  const params = useParams();
-  const id = params?.id as string;
+type Status = 'loading' | 'ready' | 'notFound' | 'error';
 
-  const [book, setBook] = useState<Book | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [currentTime, setCurrentTime] = useState<number>(0);
-  const [duration, setDuration] = useState<number>(0);
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    if (!id) return;
-
-    async function fetchBookPlayer() {
-      try {
-        const res = await fetch(
-          `https://us-central1-summaristt.cloudfunctions.net/getBook?id=${id}`
-        );
-
-        const data = await res.json();
-        setBook(data);
-      } catch (error) {
-        console.error("Failed to fetch book player details:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchBookPlayer();
-  }, [id]);
-
-  const togglePlay = () => {
-    if (!audioRef.current) return;
-
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      audioRef.current.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const skipTime = (seconds: number) => {
-    if (!audioRef.current) return;
-
-    audioRef.current.currentTime += seconds;
-  };
-
-  const formatTime = (secs: number) => {
-    if (isNaN(secs)) return "00:00";
-
-    const minutes = Math.floor(secs / 60);
-    const seconds = Math.floor(secs % 60);
-
-    return `${minutes
-      .toString()
-      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  };
-
-  if (loading) {
+function PlayerSkeleton() {
   return (
-    <div className="animate-pulse p-8">
-      <div className="h-8 w-80 bg-slate-200 rounded mx-auto mb-8"></div>
-
-      <div className="max-w-4xl mx-auto space-y-4">
-        <div className="h-6 bg-slate-200 rounded"></div>
-        <div className="h-6 bg-slate-200 rounded"></div>
-        <div className="h-6 bg-slate-200 rounded"></div>
-        <div className="h-6 bg-slate-200 rounded"></div>
-        <div className="h-6 bg-slate-200 rounded"></div>
+    <div className="mx-auto w-full max-w-[1070px] animate-pulse px-6 py-6 md:px-14" aria-hidden="true">
+      <div className="h-8 w-2/3 bg-[#e1e7ea]" />
+      <div className="mt-4 border-t border-[#e1e7ea] pt-6">
+        <div className="space-y-3">
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} className="h-4 w-full bg-[#e1e7ea]" />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-  if (!book) {
+function Message({ children }: { children: React.ReactNode }) {
+  return <div className="mx-auto w-full max-w-[1070px] px-6 py-10 text-base text-[#394547] md:px-14">{children}</div>;
+}
+
+function Player({ id }: { id: string }) {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+  const { openModal } = useAuthModal();
+  const { isSubscribed } = useSubscription();
+  const { markFinished } = useLibrary();
+
+  const [book, setBook] = useState<Book | null>(null);
+  const [status, setStatus] = useState<Status>('loading');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchBookById(id)
+      .then((found) => {
+        if (cancelled) return;
+        setBook(found);
+        setStatus(found ? 'ready' : 'notFound');
+      })
+      .catch(() => {
+        if (!cancelled) setStatus('error');
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  // Someone who opens a premium player URL directly still has to be subscribed.
+  const needsPlan = Boolean(book?.subscriptionRequired) && !isSubscribed;
+
+  useEffect(() => {
+    if (!authLoading && user && needsPlan) router.replace('/choose-plan');
+  }, [authLoading, user, needsPlan, router]);
+
+  if (status === 'loading' || authLoading) return <PlayerSkeleton />;
+  if (status === 'error') return <Message>We couldn’t load this book. Please refresh the page and try again.</Message>;
+  if (!book) return <Message>Book not found.</Message>;
+
+  if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg font-semibold text-slate-700">
-          Book summary not found.
-        </p>
-      </div>
+      <Message>
+        <p>Log in to read or listen to this book.</p>
+        <button
+          type="button"
+          onClick={() => openModal('login')}
+          className="mt-4 flex h-10 w-full max-w-[300px] cursor-pointer items-center justify-center rounded-sm bg-[#2bd97c] text-base text-[#032b41] hover:bg-[#20ba68]"
+        >
+          Login
+        </button>
+      </Message>
     );
   }
 
+  if (needsPlan) return <PlayerSkeleton />;
+
   return (
-    <div className="min-h-screen bg-white text-[#032b41] pb-32 flex flex-col justify-between">
-      <div className="border-b border-slate-200 py-4 px-8 text-center">
-        <h1 className="text-xl font-bold">{book.title}</h1>
+    <>
+      {/* Bottom padding keeps the end of the summary clear of the fixed audio bar. */}
+      <div className="mx-auto w-full max-w-[1070px] px-6 pb-48 pt-6 md:px-14 md:pb-32">
+        {/* The line belongs to the title block, so it only spans the text column. */}
+        <h1 className="border-b border-[#e1e7ea] pb-4 text-2xl font-bold text-[#032b41]">{book.title}</h1>
+        <p className="mt-6 whitespace-pre-line text-base font-normal leading-[1.4] text-[#032b41]">
+          {book.summary}
+        </p>
       </div>
-
-      <div className="max-w-3xl mx-auto px-6 py-12 flex-1">
-        <h2 className="text-2xl font-bold mb-6">
-          <b>{book.title}</b> Summary
-        </h2>
-
-        <div className="text-slate-700 leading-relaxed whitespace-pre-line text-lg">
-          {book.summary ||
-            book.bookDescription ||
-            "Summary content loading..."}
-        </div>
-      </div>
-
-      {book.audioLink && (
-        <audio
-          ref={audioRef}
-          src={book.audioLink}
-          onTimeUpdate={() =>
-            audioRef.current &&
-            setCurrentTime(audioRef.current.currentTime)
-          }
-          onLoadedMetadata={() =>
-            audioRef.current && setDuration(audioRef.current.duration)
-          }
-          onEnded={() => setIsPlaying(false)}
-        />
-      )}
-
-      <div className="fixed bottom-0 left-0 right-0 bg-[#032b41] text-white py-4 px-6 flex items-center justify-between shadow-lg z-50">
-        <div className="flex items-center gap-4 w-1/4">
-          {book.imageLink && (
-            <img
-              src={book.imageLink}
-              alt={book.title}
-              className="w-10 h-14 object-cover rounded shadow"
-            />
-          )}
-
-          <div className="overflow-hidden">
-            <h4 className="text-xs font-bold truncate">
-              {book.title}
-            </h4>
-
-            <p className="text-[10px] text-slate-300 truncate">
-              {book.author}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center gap-2 w-2/4">
-          <div className="flex items-center gap-6">
-            <button
-              onClick={() => skipTime(-10)}
-              className="text-slate-300 hover:text-white transition text-xs font-semibold"
-            >
-              ↩ 10
-            </button>
-
-            <button
-              onClick={togglePlay}
-              className="w-10 h-10 rounded-full bg-white text-[#032b41] flex items-center justify-center font-bold text-lg"
-            >
-              {isPlaying ? "❚❚" : "▶"}
-            </button>
-
-            <button
-              onClick={() => skipTime(10)}
-              className="text-slate-300 hover:text-white transition text-xs font-semibold"
-            >
-              10 ↪
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3 w-full max-w-md text-xs text-slate-300">
-            <span>{formatTime(currentTime)}</span>
-
-            <input
-              type="range"
-              min={0}
-              max={duration || 100}
-              value={currentTime}
-              onChange={(e) => {
-                if (audioRef.current) {
-                  audioRef.current.currentTime = Number(e.target.value);
-                  setCurrentTime(Number(e.target.value));
-                }
-              }}
-              className="w-full accent-[#2bd97c]"
-            />
-
-            <span>{formatTime(duration)}</span>
-          </div>
-        </div>
-
-        <div className="w-1/4 hidden md:block"></div>
-      </div>
-    </div>
+      <AudioPlayer book={book} onFinished={() => void markFinished(book).catch(() => {})} />
+    </>
   );
+}
+
+// useParams() needs a Suspense boundary above it in Next 16.
+function PlayerRoute() {
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
+
+  // key={id} resets all state when the id changes.
+  return id ? <Player key={id} id={id} /> : <PlayerSkeleton />;
 }
 
 export default function PlayerPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center min-h-screen">
-          Loading player...
-        </div>
-      }
-    >
-      <PlayerContent />
+    <Suspense fallback={<PlayerSkeleton />}>
+      <PlayerRoute />
     </Suspense>
   );
 }

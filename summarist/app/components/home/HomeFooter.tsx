@@ -23,7 +23,7 @@ export default function HomeFooter() {
           ))}
         </div>
         <p className="flex justify-center font-medium text-[#032b41]">
-          Copyright &copy; {new Date().getFullYear()} Summarist.
+          Copyright &copy; 2023 Summarist.
         </p>
       </div>
     </footer>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { Suspense, useState, type ReactNode } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai';
 import SearchBar from './SearchBar';
 import Sidebar from './SideBar';
@@ -10,7 +10,15 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
+      {/* The sidebar reads the current URL (usePathname), which Next 16 wants inside Suspense.
+          The fallback just holds the sidebar's space until it is ready. */}
+      <Suspense
+        fallback={
+          <div className="hidden w-[200px] shrink-0 border-r border-[#e1e7ea] bg-[#f7faf9] md:block" />
+        }
+      >
+        <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
+      </Suspense>
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-30 flex h-20 items-center justify-end gap-4 border-b border-[#e1e7ea] bg-white px-6">
           <SearchBar />
